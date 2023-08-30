@@ -1,0 +1,11 @@
+GET http://localhost:1234/
+
+###
+POST http://localhost:1234/pokemon
+Content-Type: application/json
+
+{
+    "name": "tuvie",
+    "type": "fire",
+    "moves": ["vie"]
+}
