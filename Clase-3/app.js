@@ -8,10 +8,15 @@ const { validateHeaderName } = require('node:http')
 const app = express ()
 app.disable('x-powered-by')
 app.use(express.json())
+app.use(express.static('./web'))
+
+//app.get('/', (req, res) => {
+//    res.json({message: 'mi api'})
+//})
 
 app.get('/', (req, res) => {
-    res.json({message: 'mi api'})
-})
+    res.sendFile(__dirname + '/web/index.html'); // Ruta al archivo HTML principal
+  });
 
 //todos los recursos que sean MOVIES se identifican con /movies
 app.get('/movies', (req, res) => {
@@ -47,20 +52,28 @@ app.post('/movies', (req, res) => {
     //res.status(201).json(newMovie)
 })
 
-app.patch('./movies/:id', (req, res) => {
+app.patch ('/movies/:id', (req, res) => {
     
     const result = validatePartialMovie(req.body)
-    if(!result) {
+    if(!result.success) {
         return res.status(400).json({error: JSON.parse(result.error.message)})
     }
+    console.log('Result of validation:', result)
 
-    const {id} = req.params
+    const { id } = req.params;
+    console.log('Received movie ID:', id);
 
+
+    
     const movieIndex = movies.findIndex(movie => movie.id === id)
-    if(movieIndex === -1) {return res.status(404).json({message: 'Movie not found'})}
+    if(movieIndex == -1) {return res.status(404).json({message: 'Movie not found'})}
+    console.log('Movie index:', movieIndex);
+
+    console.log('Movies before update:', movies);
+
     const updateMovie = {
         ...movies[movieIndex],
-        ...result.date
+        ...result.data
     }
 
     movies[movieIndex] = updateMovie
@@ -73,4 +86,7 @@ const PORT = process.env.PORT ?? 1234
 app.listen(PORT, () => {
     console.log(`server listening on port http://localhost:${PORT}`)
 })
-
+app.use((req, res, next) => {
+    console.log('Received request:', req.method, req.url);
+    next();
+});

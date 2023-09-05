@@ -18,7 +18,7 @@ const movieSchema = z.object ({ // validaciones con zod
 })
 
 function validateMovie (object) {
-    return movieSchema.safeParse(object)
+    return movieSchema.safeParse(object) // safeParse devuelve un objeto resolve si hay un error o hay datos (para manejar con un if)
 }
 
 function validatePartialMovie (object) {
